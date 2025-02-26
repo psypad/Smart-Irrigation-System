@@ -26,7 +26,7 @@
 
 /* The sign in credentials */
 #define AUTHOR_EMAIL "esp8266test007@gmail.com"
-#define AUTHOR_PASSWORD "rrsk cntv twtl vmxm"
+#define AUTHOR_PASSWORD "enter app pass"
 
 /* Recipient's email*/
 #define RECIPIENT_EMAIL "marutprishat@gmail.com"
