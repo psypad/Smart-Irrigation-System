@@ -16,9 +16,12 @@
   #include <ESP8266WiFi.h>
 #endif
 #include <ESP_Mail_Client.h>
+#include <string>
 
-#define WIFI_SSID "enter wifi name"
-#define WIFI_PASSWORD "enter wifi password"
+using namespace std;
+
+#define WIFI_SSID "lol"
+#define WIFI_PASSWORD "lol12345678"
 
 /** The smtp host name e.g. smtp.gmail.com for GMail or smtp.office365.com for Outlook or smtp.mail.yahoo.com */
 #define SMTP_HOST "smtp.gmail.com"
@@ -36,21 +39,34 @@ SMTPSession smtp;
 
 /* Callback function to get the Email sending status */
 void smtpCallback(SMTP_Status status);
+void emailer();
 
 void setup(){
   Serial.begin(115200);
   Serial.println();
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   Serial.print("Connecting to Wi-Fi");
+
   while (WiFi.status() != WL_CONNECTED){
     Serial.print(".");
     delay(300);
   }
+
   Serial.println();
   Serial.print("Connected with IP: ");
   Serial.println(WiFi.localIP());
   Serial.println();
 
+
+  int value = 1;
+  string strval = to_string(value);
+  emailer(strval);
+}
+
+void loop(){
+}
+
+void emailer(string value){
   /*  Set the network reconnection option */
   MailClient.networkReconnect(true);
 
@@ -92,22 +108,22 @@ void setup(){
   /* Set the message headers */
   message.sender.name = F("ESP");
   message.sender.email = AUTHOR_EMAIL;
-  message.subject = F("ESP Test Email");
+  message.subject = F("Soil moisture Report");
   message.addRecipient(F("Sara"), RECIPIENT_EMAIL);
     
   /*Send HTML message*/
-  /*String htmlMsg = "<div style=\"color:#2f4468;\"><h1>Hello World!</h1><p>- Sent from ESP board</p></div>";
+  string htmlMsg = "<div style=\"color:#2f4468;\"><h1>Hello MarMar value of the Soil moisture sensor is: "+ value + "</h1><p>- Sent from ESP board</p></div>";
   message.html.content = htmlMsg.c_str();
   message.html.content = htmlMsg.c_str();
   message.text.charSet = "us-ascii";
-  message.html.transfer_encoding = Content_Transfer_Encoding::enc_7bit;*/
+  message.html.transfer_encoding = Content_Transfer_Encoding::enc_7bit;
 
    
   //Send raw text message
-  String textMsg = "Hello World! - Sent from ESP board";
+  /*String textMsg = "Hello World! - Sent from ESP board" + value.str();
   message.text.content = textMsg.c_str();
   message.text.charSet = "us-ascii";
-  message.text.transfer_encoding = Content_Transfer_Encoding::enc_7bit;
+  message.text.transfer_encoding = Content_Transfer_Encoding::enc_7bit;*/
   
   message.priority = esp_mail_smtp_priority::esp_mail_smtp_priority_low;
   message.response.notify = esp_mail_smtp_notify_success | esp_mail_smtp_notify_failure | esp_mail_smtp_notify_delay;
@@ -133,9 +149,6 @@ void setup(){
   if (!MailClient.sendMail(&smtp, &message))
     ESP_MAIL_PRINTF("Error, Status Code: %d, Error Code: %d, Reason: %s", smtp.statusCode(), smtp.errorCode(), smtp.errorReason().c_str());
 
-}
-
-void loop(){
 }
 
 /* Callback function to get the Email sending status */
